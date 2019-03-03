@@ -203,7 +203,7 @@ void LJ_FASTCALL lj_tab_free(global_State *g, GCtab *t)
 {
   if (t->hmask > 0)
     lj_mem_freevec(g, noderef(t->node), t->hmask+1, Node);
-  if (t->asize > 0 && LJ_MAX_COLOSIZE != 0 && t->colo <= 0)
+  if (t->asize > 0 && LJ_MAX_COLOSIZE != 0 && t->colo <= 0) // 这里不该加LJ_MAX_COLOSIZE != 0判断
     lj_mem_freevec(g, tvref(t->array), t->asize, TValue);
   if (LJ_MAX_COLOSIZE != 0 && t->colo)
     lj_mem_free(g, t, sizetabcolo((uint32_t)t->colo & 0x7f));
@@ -436,7 +436,7 @@ TValue *lj_tab_newkey(lua_State *L, GCtab *t, cTValue *key)
 	return lj_tab_set(L, t, key);  /* Retry key insertion. */
       }
     } while (!tvisnil(&(--freenode)->key));
-    setmref(nodebase->freetop, freenode);
+    setmref(nodebase->freetop, freenode); // freenode->key is nil
     lua_assert(freenode != &G(L)->nilnode);
     collide = hashkey(t, &n->key);
     if (collide != n) {  /* Colliding node not the main node? */
